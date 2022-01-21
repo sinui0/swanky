@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn test_parser() {
-        let circ = Circuit::parse("circuits/AES-non-expanded.txt").unwrap();
+        let circ = Circuit::parse("circuits/bristol/AES-non-expanded.txt").unwrap();
         let key = vec![0u16; 128];
         let pt = vec![0u16; 128];
         let output = circ.eval_plain(&pt, &key).unwrap();
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn test_gc_eval() {
-        let mut circ = Circuit::parse("circuits/AES-non-expanded.txt").unwrap();
+        let mut circ = Circuit::parse("circuits/bristol/AES-non-expanded.txt").unwrap();
         let (en, gc) = garble(&mut circ).unwrap();
         let gb = en.encode_garbler_inputs(&vec![0u16; 128]);
         let ev = en.encode_evaluator_inputs(&vec![0u16; 128]);
