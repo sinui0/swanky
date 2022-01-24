@@ -307,7 +307,7 @@ mod tests {
     }
 
     #[test]
-    fn test_aes() {
+    fn test_aes_reverse() {
         let garbler_inputs: Vec<usize> = (0..128).collect();
         let evaluator_inputs: Vec<usize> = (128..256).collect();
         let circ = Circuit::parse(
@@ -355,17 +355,55 @@ mod tests {
         for i in 0..8 {
             key[127 - i] = 1;
         }
-        for i in 0..7 {
-            key[119] = 1;
-        }
-        println!(
-            "{:?}",
-            &key.iter().map(|i| i.to_string()).collect::<String>()
+        key.reverse();
+        pt = vec![0u16; 128];
+        pt.splice(
+            ..64,
+            [
+                0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0,
+                0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1,
+                0, 1, 1, 0, 1, 1, 0, 1,
+            ],
         );
+        pt.reverse();
+        output = circ.eval_plain(&key, &pt).unwrap();
+        output.reverse();
+        assert_eq!(output.iter().map(|i| i.to_string()).collect::<String>(),
+                    "10001010010011010111111100000011011000110101001101101001101011100001101111001110101010001010101010000000100010000001000101010111");
+
+        key = vec![0u16; 128];
+
+        for i in 0..8 {
+            key[i] = 1;
+        }
+
         key.reverse();
         pt = vec![0u16; 128];
         output = circ.eval_plain(&key, &pt).unwrap();
         output.reverse();
+        assert_eq!(output.iter().map(|i| i.to_string()).collect::<String>(),
+                    "10110001110101110101100000100101011010110010100011111101100001010000101011010100100101000100001000001000110011110001000101010101");
+    }
+
+    #[test]
+    fn test_aes() {
+        let garbler_inputs: Vec<usize> = (0..128).collect();
+        let evaluator_inputs: Vec<usize> = (128..256).collect();
+        let circ = Circuit::parse(
+            "circuits/bristol-fashion/aes_128.txt",
+            garbler_inputs,
+            evaluator_inputs,
+        )
+        .unwrap();
+
+        let mut key = vec![0u16; 128];
+
+        for i in 0..8 {
+            key[i] = 1;
+        }
+
+        let pt = vec![0u16; 128];
+        let output = circ.eval_plain(&pt, &key).unwrap();
         assert_eq!(output.iter().map(|i| i.to_string()).collect::<String>(),
                     "10110001110101110101100000100101011010110010100011111101100001010000101011010100100101000100001000001000110011110001000101010101");
     }
