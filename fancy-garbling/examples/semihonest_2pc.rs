@@ -13,9 +13,9 @@ use ocelot::ot::{AlszReceiver as OtReceiver, AlszSender as OtSender};
 use scuttlebutt::{unix_channel_pair, AesRng, UnixChannel};
 use std::time::SystemTime;
 
-fn circuit(fname: &str) -> Circuit {
+fn circuit(fname: &str, garbler_inputs: Vec<usize>, evaluator_inputs: Vec<usize>) -> Circuit {
     println!("* Circuit: {}", fname);
-    Circuit::parse(fname).unwrap()
+    Circuit::parse(fname, garbler_inputs, evaluator_inputs).unwrap()
 }
 
 fn run_circuit(circ: &mut Circuit, gb_inputs: Vec<u16>, ev_inputs: Vec<u16>) {
@@ -71,10 +71,22 @@ fn run_circuit(circ: &mut Circuit, gb_inputs: Vec<u16>, ev_inputs: Vec<u16>) {
 }
 
 fn main() {
-    let mut circ = circuit("circuits/AES-non-expanded.txt");
+    let mut circ = circuit(
+        "circuits/bristol-fashion/aes_128.txt",
+        (0..128).collect::<Vec<usize>>(),
+        (128..256).collect::<Vec<usize>>(),
+    );
     run_circuit(&mut circ, vec![0; 128], vec![0; 128]);
-    let mut circ = circuit("circuits/sha-1.txt");
-    run_circuit(&mut circ, vec![0; 512], vec![]);
-    let mut circ = circuit("circuits/sha-256.txt");
-    run_circuit(&mut circ, vec![0; 512], vec![]);
+    let mut circ = circuit(
+        "circuits/bristol-fashion/sha256.txt",
+        (0..512).collect::<Vec<usize>>(),
+        (512..768).collect::<Vec<usize>>(),
+    );
+    run_circuit(&mut circ, vec![0; 512], vec![0; 256]);
+    let mut circ = circuit(
+        "circuits/bristol-fashion/sha512.txt",
+        (0..1024).collect::<Vec<usize>>(),
+        (1024..1536).collect::<Vec<usize>>(),
+    );
+    run_circuit(&mut circ, vec![0; 1024], vec![0; 512]);
 }
