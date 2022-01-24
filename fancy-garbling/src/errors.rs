@@ -256,6 +256,8 @@ pub enum CircuitParserError {
     ParseLineError(String),
     /// An error occurred parsing a gate type.
     ParseGateError(String),
+    /// An error occurred due to invalid garbler/evaluator inputs.
+    InputError(),
 }
 
 impl Display for CircuitParserError {
@@ -266,6 +268,7 @@ impl Display for CircuitParserError {
             CircuitParserError::ParseIntError => write!(f, "unable to parse integer"),
             CircuitParserError::ParseLineError(s) => write!(f, "unable to parse line '{}'", s),
             CircuitParserError::ParseGateError(s) => write!(f, "unable to parse gate '{}'", s),
+            CircuitParserError::InputError() => write!(f, "invalid circuit inputs"),
         }
     }
 }
