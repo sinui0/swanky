@@ -100,8 +100,15 @@ mod tests {
     }
 
     #[test]
-    fn test_aes() {
-        let circ = Circuit::parse("circuits/bristol/AES-non-expanded.txt").unwrap();
+    fn test_twopac_aes() {
+        let garbler_inputs: Vec<usize> = (0..128).collect();
+        let evaluator_inputs: Vec<usize> = (128..256).collect();
+        let circ = Circuit::parse(
+            "circuits/bristol-fashion/aes_128.txt",
+            garbler_inputs,
+            evaluator_inputs,
+        )
+        .unwrap();
 
         circ.print_info().unwrap();
 
