@@ -24,8 +24,8 @@ type Reader = BufReader<UnixStream>;
 type Writer = BufWriter<UnixStream>;
 type MyChannel = Channel<Reader, Writer>;
 
-fn circuit(fname: &str) -> Circuit {
-    Circuit::parse(fname).unwrap()
+fn circuit(fname: &str, garbler_inputs: Vec<usize>, evaluator_inputs: Vec<usize>) -> Circuit {
+    Circuit::parse(fname, garbler_inputs, evaluator_inputs).unwrap()
 }
 
 fn _bench_circuit(circ: &Circuit, gb_inputs: Vec<u16>, ev_inputs: Vec<u16>) {
@@ -55,30 +55,31 @@ fn _bench_circuit(circ: &Circuit, gb_inputs: Vec<u16>, ev_inputs: Vec<u16>) {
 }
 
 fn bench_aes(c: &mut Criterion) {
-    let circ = circuit("circuits/AES-non-expanded.txt");
+    let circ = circuit(
+        "circuits/bristol-fashion/aes_128.txt",
+        (0..128).collect::<Vec<usize>>(),
+        (128..256).collect::<Vec<usize>>(),
+    );
     c.bench_function("twopac::semi-honest (AES)", move |bench| {
         bench.iter(|| _bench_circuit(&circ, vec![0u16; 128], vec![0u16; 128]))
     });
 }
 
-fn bench_sha_1(c: &mut Criterion) {
-    let circ = circuit("circuits/sha-1.txt");
-    c.bench_function("twopac::semi-honest (SHA-1)", move |bench| {
-        bench.iter(|| _bench_circuit(&circ, vec![0u16; 512], vec![]))
-    });
-}
-
 fn bench_sha_256(c: &mut Criterion) {
-    let circ = circuit("circuits/sha-256.txt");
+    let circ = circuit(
+        "circuits/bristol-fashion/sha256.txt",
+        (0..512).collect::<Vec<usize>>(),
+        (512..768).collect::<Vec<usize>>(),
+    );
     c.bench_function("twopac::semi-honest (SHA-256)", move |bench| {
-        bench.iter(|| _bench_circuit(&circ, vec![0u16; 512], vec![]))
+        bench.iter(|| _bench_circuit(&circ, vec![0u16; 512], vec![0u16; 256]))
     });
 }
 
 criterion_group! {
     name = semihonest;
     config = Criterion::default().warm_up_time(Duration::from_millis(100)).sample_size(10);
-    targets = bench_aes, bench_sha_1, bench_sha_256,
+    targets = bench_aes, bench_sha_256,
 }
 
 criterion_main!(semihonest);
