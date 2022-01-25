@@ -251,6 +251,10 @@ mod tests {
         )
         .unwrap();
 
+        assert_eq!(circ.num_garbler_inputs(), 64);
+        assert_eq!(circ.num_evaluator_inputs(), 64);
+        assert_eq!(circ.noutputs(), 64);
+
         let a = vec![0u16; 64];
         let b = vec![0u16; 64];
         let output = circ.eval_plain(&a, &b).unwrap();
@@ -316,6 +320,10 @@ mod tests {
             evaluator_inputs,
         )
         .unwrap();
+
+        assert_eq!(circ.num_garbler_inputs(), 128);
+        assert_eq!(circ.num_evaluator_inputs(), 128);
+        assert_eq!(circ.noutputs(), 128);
 
         let mut key = vec![0u16; 128];
         let mut pt = vec![0u16; 128];
@@ -395,6 +403,10 @@ mod tests {
             evaluator_inputs,
         )
         .unwrap();
+
+        assert_eq!(circ.num_garbler_inputs(), 128);
+        assert_eq!(circ.num_evaluator_inputs(), 128);
+        assert_eq!(circ.noutputs(), 128);
 
         let mut key = vec![0u16; 128];
 
