@@ -173,12 +173,14 @@ impl Circuit {
         let re2 = Regex::new(r"2 1 (\d+) (\d+) (\d+) ((AND|XOR))")?;
 
         let mut id = 0;
+        let mut count = 0;
 
         // Process gates
         for line in reader.lines() {
             let line = line?;
             match line.chars().next() {
                 Some('1') => {
+                    count += 1;
                     let cap = regex2captures(&re1, &line)?;
                     let yref = cap2int(&cap, 1)?;
                     let out = cap2int(&cap, 2)?;
@@ -193,6 +195,7 @@ impl Circuit {
                     })
                 }
                 Some('2') => {
+                    count += 1;
                     let cap = regex2captures(&re2, &line)?;
                     let xref = cap2int(&cap, 1)?;
                     let yref = cap2int(&cap, 2)?;
@@ -230,6 +233,11 @@ impl Circuit {
                     return Err(Error::ParseLineError(line.to_string()));
                 }
             }
+        }
+        if count != ngates {
+            return Err(Error::ParseGateError(format!(
+                "expecting {ngates} gates, parsed {count}"
+            )));
         }
         circ.gate_moduli = vec![2u16; circ.gates.len()];
         Ok(circ)
