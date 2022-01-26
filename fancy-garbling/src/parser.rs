@@ -246,7 +246,7 @@ impl Circuit {
 
 #[cfg(test)]
 mod tests {
-    use crate::circuit::Circuit;
+    use crate::{circuit::Circuit, classic::garble};
 
     #[test]
     fn test_adder64() {
@@ -475,19 +475,19 @@ mod tests {
                     "10110001110101110101100000100101011010110010100011111101100001010000101011010100100101000100001000001000110011110001000101010101");
     }
 
-    // #[test]
-    // fn test_gc_eval() {
-    //     let garbler_inputs: Vec<usize> = (0..127).collect();
-    //     let evaluator_inputs: Vec<usize> = (128..256).collect();
-    //     let circ = Circuit::parse(
-    //         "circuits/bristol-fashion/aes_128.txt",
-    //         garbler_inputs,
-    //         evaluator_inputs,
-    //     )
-    //     .unwrap();
-    //     let (en, gc) = garble(&mut circ).unwrap();
-    //     let gb = en.encode_garbler_inputs(&vec![0u16; 128]);
-    //     let ev = en.encode_evaluator_inputs(&vec![0u16; 128]);
-    //     gc.eval(&mut circ, &gb, &ev).unwrap();
-    // }
+    #[test]
+    fn test_gc_eval() {
+        let garbler_inputs: Vec<usize> = (0..128).collect();
+        let evaluator_inputs: Vec<usize> = (128..256).collect();
+        let mut circ = Circuit::parse(
+            "circuits/bristol-fashion/aes_128_reverse.txt",
+            garbler_inputs,
+            evaluator_inputs,
+        )
+        .unwrap();
+        let (en, gc) = garble(&mut circ).unwrap();
+        let gb = en.encode_garbler_inputs(&vec![0u16; 128]);
+        let ev = en.encode_evaluator_inputs(&vec![0u16; 128]);
+        gc.eval(&mut circ, &gb, &ev).unwrap();
+    }
 }
